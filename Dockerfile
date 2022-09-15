@@ -6,7 +6,6 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get -y install libpq-dev gcc \
     && pip install pipenv
-RUN pipenv install typing-extensions
 
 COPY Pipfile.lock Pipfile.lock
 
