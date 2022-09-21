@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://myuser:abc@db/mydb
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: abc
+    volumes:
+      - "dbdata://var/lib/postgresql/data"
+volumes:
+  dbdata:

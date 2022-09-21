@@ -1,22 +1,34 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
 
-# from . import crud, models, schemas
-# from .database import SessionLocal, engine
+from database import SessionLocal, engine
+import crud, models, schemas
 
 app = FastAPI()
+
+models.Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @app.get("/")
 async def root():
     return {"Hello World"}
 
-# @app.post("/links", response_model=schemas.Link)
-# def create_link(link: schemas.LinkCreate, db: Session = Depends(get_db)):
-#     db_link = crud.create_link(db, link)
-#     return db_link
-#
-# @app.get("/links/{link_id}", response_model=schemas.User)
-# def get_link(link_id: int, db: Session = Depends(get_db)):
-#     db_link = crud.get_link(db, link)
-#     return db_link
+@app.post("/links", response_model=schemas.Link)
+def create_link(link: schemas.LinkCreate, db: Session = Depends(get_db)):
+    db_link = crud.create_link(db, link)
+    return db_link
+
+@app.get("/links/{link_id}", response_model=schemas.Link)
+def get_link(link_id: int, db: Session = Depends(get_db)):
+    db_link = crud.get_link(db, link_id=link_id)
+    if db_link is None:
+        raise HTTPException(status_code=404, detail="Link not found")
+    return db_link
 
