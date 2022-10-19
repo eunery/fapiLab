@@ -15,4 +15,4 @@ EXPOSE 8000
 
 CMD pipenv run uvicorn web:app --reload --host 0.0.0.0
 
-COPY web /app
+COPY . /app
