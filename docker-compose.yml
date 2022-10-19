@@ -1,28 +1,36 @@
 version: '3.9'
 
 services:
-  web:
+  web_1:
     build: web/.
-    ports:
-      - "8080:8000"
     depends_on:
       - db
     links:
       - db
     environment:
       DATABASE_URL: postgresql://myuser:abc@db/mydb
+      NAME: web_1
+  web_2:
+    build: web/.
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+      DATABASE_URL: postgresql://myuser:abc@db/mydb
+      NAME: web_2
   loader:
     build: loader/.
     restart: on-failure
     depends_on:
       - rabbit
-      - web
+      - nginx
     links:
       - rabbit
-      - web
+      - nginx
     environment:
       RABBITMQ_URL: amqp://myuser:abc@rabbit:5672/%2F
-      WEB_BASE_URL: http://web:8000
+      WEB_BASE_URL: http://nginx:80
   db:
     image: postgres
     restart: always
@@ -47,5 +55,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+  nginx:
+    build: nginx/.
+    ports:
+      - "8080:80"
+    depends_on:
+      - web_1
+      - web_2
+    links:
+      - web_1
+      - web_2
 volumes:
   dbdata:

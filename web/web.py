@@ -1,9 +1,13 @@
-from fastapi import FastAPI, Depends, HTTPException
+from os import environ
+
+from fastapi import FastAPI, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from queueRabbit import send_message_to_queue
 from database import SessionLocal, engine
 import crud, models, schemas
+
+SERVER_NAME = environ.get("NAME")
 
 app = FastAPI()
 
@@ -40,4 +44,10 @@ def update_link(link_id: int, link: schemas.LinkUpdate, db: Session = Depends(ge
     if db_link is None:
         raise HTTPException(status_code=404, detail="Link not found")
     return db_link
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Server-Name"] = SERVER_NAME
+    return response
 
