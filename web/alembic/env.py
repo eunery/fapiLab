@@ -10,6 +10,7 @@ from alembic import context
 from models import Base
 from database import db_url, engine
 
+
 config = context.config
 
 if config.config_file_name is not None:

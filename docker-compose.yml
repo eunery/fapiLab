@@ -10,6 +10,7 @@ services:
     environment:
       DATABASE_URL: postgresql://myuser:abc@db/mydb
       NAME: web_1
+      RABBITMQ_URL: amqp://myuser:abc@rabbit:5672/%2F
   web_2:
     build: web/.
     depends_on:
@@ -19,6 +20,7 @@ services:
     environment:
       DATABASE_URL: postgresql://myuser:abc@db/mydb
       NAME: web_2
+      RABBITMQ_URL: amqp://myuser:abc@rabbit:5672/%2F
   loader:
     build: loader/.
     restart: on-failure
@@ -35,7 +37,7 @@ services:
     image: postgres
     restart: always
     ports:
-      - "15432:5432"
+      - "5432:5432"
     environment:
       POSTGRES_DB: mydb
       POSTGRES_USER: myuser

@@ -1,3 +1,4 @@
+import json
 from os import environ
 
 from fastapi import FastAPI, Depends, HTTPException, Request
@@ -28,7 +29,7 @@ async def root():
 @app.post("/links", response_model=schemas.Link)
 def create_link(link: schemas.LinkCreate, db: Session = Depends(get_db)):
     db_link = crud.create_link(db, link)
-    send_message_to_queue(db_link)
+    send_message_to_queue(json.dumps(db_link.as_dict(), indent=4, sort_keys=True, default=str))
     return db_link
 
 @app.get("/links/{link_id}", response_model=schemas.Link)
