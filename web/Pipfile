@@ -11,6 +11,7 @@ sqlalchemy = "*"
 psycopg2 = "*"
 pika = "*"
 alembic = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
